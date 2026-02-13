@@ -1,10 +1,37 @@
+export interface Address {
+  id: string;
+  type: 'Home' | 'Work' | 'Other';
+  label: string;
+  address: string;
+  isDefault: boolean;
+}
+
+export interface PaymentMethod {
+  id: string;
+  type: 'UPI' | 'Card' | 'Wallet' | 'COD';
+  label: string;
+  maskedNumber?: string;
+  isDefault: boolean;
+}
+
+export interface NotificationSettings {
+  orderUpdates: boolean;
+  offers: boolean;
+  reminders: boolean;
+  sound: boolean;
+  vibration: boolean;
+}
+
 export interface User {
   id: string;
   name: string;
   email: string;
-  phone?: string;
+  phone: string;
   dailyBudget: number;
   avatar?: string;
+  addresses: Address[];
+  paymentMethods: PaymentMethod[];
+  notificationSettings: NotificationSettings;
 }
 
 export interface Restaurant {
@@ -55,6 +82,11 @@ export interface MealSuggestion {
 export interface Order {
   id: string;
   items: CartItem[];
+  subtotal?: number;
+  deliveryCharge?: number;
+  gst?: number;
+  platformFee?: number;
+  discount?: number;
   total: number;
   status: 'pending' | 'confirmed' | 'preparing' | 'out_for_delivery' | 'delivered';
   deliveryOtp: string;
@@ -67,11 +99,22 @@ export interface Subscription {
   id: string;
   type: 'breakfast' | 'lunch' | 'dinner' | 'all';
   budget: number;
+  walletBalance: number;
+  planName?: string;
+  durationMonths?: number;
   startDate: Date;
   endDate: Date;
   isActive: boolean;
   mealsDelivered: number;
   totalMeals: number;
+}
+
+export interface SubscriptionPlan {
+  id: string;
+  name: string;
+  price: number;
+  durationMonths: number;
+  benefits: string[];
 }
 
 export interface GroceryItem {

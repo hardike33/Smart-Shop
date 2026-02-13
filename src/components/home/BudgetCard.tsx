@@ -16,19 +16,20 @@ export function BudgetCard() {
   };
 
   return (
-    <Card className="bg-gradient-primary text-primary-foreground border-0 overflow-hidden">
-      <div className="p-5">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary-foreground/20 rounded-xl flex items-center justify-center">
-              <Wallet className="w-5 h-5" />
+    <Card className="bg-gradient-hero text-white border-0 overflow-hidden shadow-elevated rounded-[32px] relative group">
+      <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl group-hover:scale-125 transition-transform duration-500" />
+      <div className="p-6 relative z-10">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20">
+              <Wallet className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="text-sm opacity-90">Today's Budget</p>
-              <p className="text-2xl font-bold">₹{dailyBudget}</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70 mb-1">Today's Budget</p>
+              <p className="text-3xl font-black tracking-tight">₹{dailyBudget}</p>
             </div>
           </div>
-          
+
           {isEditing ? (
             <div className="flex items-center gap-2">
               <Button

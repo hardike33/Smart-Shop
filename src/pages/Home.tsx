@@ -1,13 +1,18 @@
+import { useNavigate } from 'react-router-dom';
 import { MobileLayout } from '@/components/layout/MobileLayout';
+import { Card } from '@/components/ui/card';
 import { BudgetCard } from '@/components/home/BudgetCard';
 import { QuickActions } from '@/components/home/QuickActions';
 import { SubscriptionBanner } from '@/components/home/SubscriptionBanner';
 import { useApp } from '@/context/AppContext';
 import { Bell, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { restaurantsData } from '@/data/restaurants';
+import { RestaurantCard } from '@/components/home/RestaurantCard';
 
 export default function Home() {
-  const { user } = useApp();
+  const navigate = useNavigate();
+  const { user, restaurants } = useApp();
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -30,11 +35,17 @@ export default function Home() {
             <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full" />
           </Button>
         </div>
-        <button className="flex items-center gap-1 text-sm text-muted-foreground">
-          <MapPin className="w-4 h-4" />
-          <span>Deliver to: </span>
-          <span className="text-foreground font-medium">Home</span>
-        </button>
+        <div className="flex items-center justify-between">
+          <button className="flex items-center gap-1 text-sm text-muted-foreground">
+            <MapPin className="w-4 h-4" />
+            <span>Deliver to: </span>
+            <span className="text-foreground font-medium">Home</span>
+          </button>
+          <div className="flex items-center gap-1.5 bg-success/10 px-3 py-1.5 rounded-full scale-90 origin-right transition-transform hover:scale-95 cursor-default">
+            <div className="w-1.5 h-1.5 bg-success rounded-full animate-pulse" />
+            <span className="text-[10px] font-black text-success uppercase tracking-widest">12 Riders Nearby</span>
+          </div>
+        </div>
       </header>
 
       {/* Content */}
@@ -55,29 +66,20 @@ export default function Home() {
 
         {/* Popular Near You */}
         <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Popular Near You</h2>
-            <button className="text-primary text-sm font-medium">See All</button>
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <h2 className="text-xl font-bold text-slate-900">Popular Near You</h2>
+              <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-0.5">Recommended for you</p>
+            </div>
+            <button className="text-primary text-sm font-black uppercase tracking-widest">See All</button>
           </div>
-          <div className="flex gap-4 overflow-x-auto scrollbar-hide -mx-5 px-5 pb-2">
-            {popularRestaurants.map(restaurant => (
-              <div
+          <div className="grid grid-cols-1 gap-6 pb-24">
+            {restaurants.map(restaurant => (
+              <RestaurantCard
                 key={restaurant.id}
-                className="min-w-[160px] bg-card rounded-2xl overflow-hidden shadow-soft"
-              >
-                <div className="h-24 bg-muted flex items-center justify-center text-4xl">
-                  {restaurant.emoji}
-                </div>
-                <div className="p-3">
-                  <p className="font-semibold text-sm truncate">{restaurant.name}</p>
-                  <div className="flex items-center gap-1 mt-1">
-                    <span className="text-warning">★</span>
-                    <span className="text-xs text-muted-foreground">
-                      {restaurant.rating} • {restaurant.time}
-                    </span>
-                  </div>
-                </div>
-              </div>
+                restaurant={restaurant}
+                onClick={() => navigate(`/restaurant/${restaurant.id}`)}
+              />
             ))}
           </div>
         </section>
@@ -86,9 +88,3 @@ export default function Home() {
   );
 }
 
-const popularRestaurants = [
-  { id: '1', name: 'Sharma Kitchen', rating: 4.5, time: '20 min', emoji: '🍛' },
-  { id: '2', name: 'Fresh Bites', rating: 4.3, time: '25 min', emoji: '🥗' },
-  { id: '3', name: 'Mama Meals', rating: 4.8, time: '30 min', emoji: '🍲' },
-  { id: '4', name: 'Quick Eats', rating: 4.2, time: '15 min', emoji: '🥪' },
-];

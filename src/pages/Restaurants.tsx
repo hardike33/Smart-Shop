@@ -7,16 +7,26 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft, Search, SlidersHorizontal, Star, Clock, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { restaurantsData } from '@/data/restaurants';
+import { useApp } from '@/context/AppContext';
+import { RestaurantCard } from '@/components/home/RestaurantCard';
 
 const filters = ['All', 'Home-Made', 'Budget', 'Top Rated', 'Fast Delivery'];
 
+const getCategoryIcon = (category: string) => {
+  if (category.includes('Indian')) return '🍛';
+  if (category.includes('Healthy')) return '🥗';
+  if (category.includes('Home')) return '🍲';
+  if (category.includes('Fast')) return '🥪';
+  return '🍽️';
+};
+
 export default function Restaurants() {
   const navigate = useNavigate();
+  const { restaurants } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
 
-  const filteredRestaurants = restaurantsData.filter(r => {
+  const filteredRestaurants = restaurants.filter(r => {
     if (searchQuery && !r.name.toLowerCase().includes(searchQuery.toLowerCase())) {
       return false;
     }
@@ -76,45 +86,13 @@ export default function Restaurants() {
       </div>
 
       {/* Restaurant List */}
-      <div className="px-5 space-y-4">
+      <div className="px-5 space-y-5 pb-20">
         {filteredRestaurants.map(restaurant => (
-          <Card
+          <RestaurantCard
             key={restaurant.id}
-            className="overflow-hidden cursor-pointer hover:shadow-card transition-shadow"
+            restaurant={restaurant}
             onClick={() => navigate(`/restaurant/${restaurant.id}`)}
-          >
-            <div className="flex">
-              <div className="w-28 h-28 bg-muted flex items-center justify-center text-5xl">
-                {restaurant.emoji}
-              </div>
-              <div className="flex-1 p-4">
-                <div className="flex items-start justify-between mb-1">
-                  <h3 className="font-semibold">{restaurant.name}</h3>
-                  {restaurant.isHomeMade && (
-                    <Badge variant="homemade" className="text-xs">Home-Made</Badge>
-                  )}
-                </div>
-                <p className="text-sm text-muted-foreground mb-2">
-                  {restaurant.cuisines.join(' • ')}
-                </p>
-                <div className="flex items-center gap-3 text-sm">
-                  <span className="flex items-center gap-1">
-                    <Star className="w-4 h-4 text-warning fill-warning" />
-                    <span className="font-medium">{restaurant.rating}</span>
-                    <span className="text-muted-foreground">({restaurant.reviewCount})</span>
-                  </span>
-                  <span className="flex items-center gap-1 text-muted-foreground">
-                    <Clock className="w-4 h-4" />
-                    {restaurant.deliveryTime}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-                  <MapPin className="w-4 h-4" />
-                  {restaurant.distance} • ₹{restaurant.deliveryFee} delivery
-                </div>
-              </div>
-            </div>
-          </Card>
+          />
         ))}
       </div>
     </MobileLayout>

@@ -1,76 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Food Delivery App Design System - Warm, Accessible, Elder-Friendly */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-
 @layer base {
   :root {
-    /* Warm, appetizing color palette */
-    --background: 30 50% 98%;
-    --foreground: 20 20% 15%;
+    /* Premium Modern Color Palette - Indigo & Slate */
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 20 20% 15%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 20 20% 15%;
+    --popover-foreground: 222 47% 11%;
 
-    /* Warm coral/orange - appetizing and friendly */
-    --primary: 16 85% 55%;
+    /* Premium Indigo */
+    --primary: 238 83% 66%;
     --primary-foreground: 0 0% 100%;
 
-    /* Fresh green for healthy options */
-    --secondary: 142 50% 45%;
+    /* Modern Teal for success/secondary */
+    --secondary: 174 84% 41%;
     --secondary-foreground: 0 0% 100%;
 
-    /* Soft cream for muted surfaces */
-    --muted: 30 30% 94%;
-    --muted-foreground: 20 10% 45%;
+    /* Soft Slate for muted elements */
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
 
-    /* Teal accent for utilities/medical */
-    --accent: 180 45% 50%;
+    /* Royal Purple for accent */
+    --accent: 262 83% 58%;
     --accent-foreground: 0 0% 100%;
 
-    /* Warning/budget colors */
-    --warning: 45 95% 55%;
-    --warning-foreground: 20 20% 15%;
+    /* Alert / Warning */
+    --warning: 38 92% 50%;
+    --warning-foreground: 222 47% 11%;
 
-    /* Success green */
+    /* Success Emerald */
     --success: 142 70% 45%;
     --success-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 30 20% 88%;
-    --input: 30 20% 88%;
-    --ring: 16 85% 55%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 238 83% 66%;
 
-    --radius: 1rem;
+    --radius: 1.5rem;
 
-    /* Custom shadows */
-    --shadow-soft: 0 4px 20px -4px hsl(20 20% 15% / 0.1);
-    --shadow-card: 0 8px 30px -8px hsl(20 20% 15% / 0.12);
-    --shadow-elevated: 0 16px 50px -12px hsl(20 20% 15% / 0.2);
+    /* Refined Premium Shadows */
+    --shadow-soft: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    --shadow-elevated: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(16 85% 55%), hsl(25 90% 60%));
-    --gradient-secondary: linear-gradient(135deg, hsl(142 50% 45%), hsl(150 55% 50%));
-    --gradient-warm: linear-gradient(180deg, hsl(30 50% 98%), hsl(30 40% 95%));
-    --gradient-hero: linear-gradient(135deg, hsl(16 85% 55%) 0%, hsl(35 90% 60%) 100%);
-
-    /* Sidebar colors */
-    --sidebar-background: 30 50% 98%;
-    --sidebar-foreground: 20 20% 15%;
-    --sidebar-primary: 16 85% 55%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 30 30% 94%;
-    --sidebar-accent-foreground: 20 20% 15%;
-    --sidebar-border: 30 20% 88%;
-    --sidebar-ring: 16 85% 55%;
+    /* Luxury Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(238 83% 66%), hsl(262 83% 58%));
+    --gradient-secondary: linear-gradient(135deg, hsl(174 84% 41%), hsl(142 70% 45%));
+    --gradient-soft: linear-gradient(180deg, hsl(210 20% 98%), hsl(210 40% 96%));
+    --gradient-hero: linear-gradient(135deg, hsl(238 83% 66%) 0%, hsl(262 83% 58%) 100%);
   }
 
   .dark {
@@ -133,12 +123,17 @@
   }
 
   /* Accessibility: larger tap targets */
-  button, a, input, select, textarea {
+  button,
+  a,
+  input,
+  select,
+  textarea {
     min-height: 44px;
   }
 }
 
 @layer components {
+
   /* Elder-friendly large button */
   .btn-large {
     @apply min-h-[56px] text-lg font-semibold px-8 rounded-2xl;
@@ -183,8 +178,8 @@
 
   /* Quick action card */
   .action-card {
-    @apply bg-card rounded-2xl p-4 flex flex-col items-center justify-center gap-2 transition-all duration-200 active:scale-95;
-    box-shadow: var(--shadow-soft);
+    @apply bg-card rounded-[28px] p-4 flex flex-col items-center justify-center gap-2 transition-all duration-200 active:scale-95 border border-slate-50;
+    box-shadow: var(--shadow-card);
   }
 
   .action-card:hover {
@@ -202,12 +197,13 @@
 }
 
 @layer utilities {
+
   /* Hide scrollbar but keep functionality */
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }

@@ -24,6 +24,11 @@ import masalaDosa from '@/assets/food/masala-dosa.jpg';
 import onionUttapam from '@/assets/food/onion-uttapam.jpg';
 import idli from '@/assets/food/idli.jpg';
 import vada from '@/assets/food/vada.jpg';
+import biryaniHD from '@/assets/food/biryani-hd.png';
+import southIndianHD from '@/assets/food/south-indian-hd.png';
+import northIndianThaliHD from '@/assets/food/north-indian-thali-hd.png';
+import freshBitesHD from '@/assets/food/fresh-bites-hd.png';
+import mamasHomeFoodHD from '@/assets/food/mamas-home-food-hd.png';
 
 export interface MenuItem {
   id: string;
@@ -40,6 +45,7 @@ export interface RestaurantData {
   id: string;
   name: string;
   emoji: string;
+  imageUrl?: string;
   rating: number;
   reviewCount: number;
   cuisines: string[];
@@ -56,12 +62,13 @@ export const restaurantsData: RestaurantData[] = [
     id: '1',
     name: 'Sharma Kitchen',
     emoji: '🍛',
+    imageUrl: 'https://images.unsplash.com/photo-1626777553767-463df4740f95',
     rating: 4.5,
     reviewCount: 234,
     cuisines: ['Home-Made', 'North Indian', 'Thali'],
-    deliveryTime: '20-25 min',
-    deliveryFee: 20,
-    distance: '1.2 km',
+    deliveryTime: '25-30 min',
+    deliveryFee: 0,
+    distance: '1.5 km',
     isHomeMade: true,
     priceRange: 1,
     menu: [
@@ -119,11 +126,12 @@ export const restaurantsData: RestaurantData[] = [
     id: '2',
     name: 'Fresh Bites Cafe',
     emoji: '🥗',
+    imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd',
     rating: 4.3,
     reviewCount: 189,
     cuisines: ['Healthy', 'Salads', 'Wraps'],
     deliveryTime: '25-30 min',
-    deliveryFee: 30,
+    deliveryFee: 0,
     distance: '2.1 km',
     isHomeMade: false,
     priceRange: 2,
@@ -182,11 +190,12 @@ export const restaurantsData: RestaurantData[] = [
     id: '3',
     name: "Mama's Home Food",
     emoji: '🍲',
+    imageUrl: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe',
     rating: 4.8,
     reviewCount: 456,
     cuisines: ['Home-Made', 'Comfort Food'],
     deliveryTime: '30-35 min',
-    deliveryFee: 15,
+    deliveryFee: 0,
     distance: '0.8 km',
     isHomeMade: true,
     priceRange: 1,
@@ -244,12 +253,13 @@ export const restaurantsData: RestaurantData[] = [
     id: '4',
     name: 'Biryani House',
     emoji: '🍚',
+    imageUrl: 'https://images.unsplash.com/photo-1589302168068-1c459288350e',
     rating: 4.6,
     reviewCount: 567,
     cuisines: ['Biryani', 'Mughlai'],
     deliveryTime: '35-40 min',
-    deliveryFee: 25,
-    distance: '3.2 km',
+    deliveryFee: 0,
+    distance: '0.8 km',
     isHomeMade: false,
     priceRange: 2,
     menu: [
@@ -307,12 +317,13 @@ export const restaurantsData: RestaurantData[] = [
     id: '5',
     name: 'South Express',
     emoji: '🥞',
+    imageUrl: 'https://images.unsplash.com/photo-1668236543090-82eba5ee5976',
     rating: 4.4,
     reviewCount: 321,
     cuisines: ['South Indian', 'Dosa'],
     deliveryTime: '20-25 min',
-    deliveryFee: 20,
-    distance: '1.5 km',
+    deliveryFee: 0,
+    distance: '3.2 km',
     isHomeMade: false,
     priceRange: 1,
     menu: [

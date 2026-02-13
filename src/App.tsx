@@ -20,7 +20,16 @@ import GroceryShopDetail from "./pages/GroceryShopDetail";
 import Medical from "./pages/Medical";
 import Vehicle from "./pages/Vehicle";
 import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
+import SavedAddresses from "./pages/SavedAddresses";
+import PaymentMethods from "./pages/PaymentMethods";
+import BudgetSettings from "./pages/BudgetSettings";
+import NotificationSettings from "./pages/NotificationSettings";
+import HelpSupport from "./pages/HelpSupport";
+import AppSettings from "./pages/AppSettings";
 import Explore from "./pages/Explore";
+import SubscriptionPlans from "./pages/SubscriptionPlans";
+import OrderSuccess from "./pages/OrderSuccess";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -56,6 +65,7 @@ function AppRoutes() {
       <Route path="/restaurant/:id" element={<RestaurantDetail />} />
       <Route path="/homemade" element={<Restaurants />} />
       <Route path="/cart" element={<Cart />} />
+      <Route path="/order-success" element={<OrderSuccess />} />
       <Route path="/tracking" element={<Tracking />} />
       <Route path="/orders" element={<Orders />} />
       <Route path="/groceries" element={<Groceries />} />
@@ -63,7 +73,14 @@ function AppRoutes() {
       <Route path="/medical" element={<Medical />} />
       <Route path="/vehicle" element={<Vehicle />} />
       <Route path="/profile" element={<Profile />} />
-      <Route path="/subscriptions" element={<Orders />} />
+      <Route path="/edit-profile" element={<EditProfile />} />
+      <Route path="/addresses" element={<SavedAddresses />} />
+      <Route path="/payments" element={<PaymentMethods />} />
+      <Route path="/budget" element={<BudgetSettings />} />
+      <Route path="/notifications" element={<NotificationSettings />} />
+      <Route path="/help" element={<HelpSupport />} />
+      <Route path="/settings" element={<AppSettings />} />
+      <Route path="/subscriptions" element={<SubscriptionPlans />} />
 
       {/* Catch-all */}
       <Route path="*" element={<NotFound />} />

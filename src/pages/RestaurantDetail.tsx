@@ -5,17 +5,18 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Star, Clock, MapPin, Plus, Minus, ShoppingCart } from 'lucide-react';
-import { getRestaurantById, MenuItem } from '@/data/restaurants';
+import { MenuItem } from '@/data/restaurants';
 import { useApp } from '@/context/AppContext';
 import { cn } from '@/lib/utils';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
 
 export default function RestaurantDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { addToCart, cart } = useApp();
+  const { addToCart, cart, restaurants } = useApp();
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
-  const restaurant = getRestaurantById(id || '');
+  const restaurant = restaurants.find(r => r.id === id);
 
   if (!restaurant) {
     return (
@@ -93,40 +94,46 @@ export default function RestaurantDetail() {
         </div>
       </header>
 
-      {/* Restaurant Info Card */}
-      <div className="px-5 py-4">
-        <Card className="p-4">
-          <div className="flex items-start gap-4">
-            <div className="w-16 h-16 bg-muted rounded-xl flex items-center justify-center text-4xl">
-              {restaurant.emoji}
+      {/* Restaurant Info Header */}
+      <div className="relative h-56">
+        <OptimizedImage
+          src={restaurant.imageUrl || ''}
+          alt={restaurant.name}
+          containerClassName="w-full h-full"
+          className="w-full h-full"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-black/20" />
+      </div>
+
+      <div className="px-5 -mt-10 relative z-10">
+        <Card className="p-5 shadow-xl border-none bg-white rounded-3xl">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-black text-gray-800">{restaurant.name}</h2>
+              <div className="flex items-center gap-1 bg-green-600 text-white px-3 py-1 rounded-xl">
+                <span className="text-sm font-bold">{restaurant.rating}</span>
+                <Star className="w-4 h-4 fill-current" />
+              </div>
             </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <h2 className="font-bold text-lg">{restaurant.name}</h2>
-                {restaurant.isHomeMade && (
-                  <Badge variant="homemade" className="text-xs">
-                    Home-Made
-                  </Badge>
-                )}
+
+            <p className="text-sm font-medium text-muted-foreground">
+              {restaurant.cuisines.join(', ')}
+            </p>
+
+            <div className="flex items-center gap-6 pt-3 border-t border-gray-50">
+              <div className="flex flex-col items-center gap-1">
+                <Clock className="w-5 h-5 text-gray-400" />
+                <span className="text-[10px] font-black uppercase text-gray-400">{restaurant.deliveryTime}</span>
               </div>
-              <p className="text-sm text-muted-foreground mb-2">
-                {restaurant.cuisines.join(' • ')}
-              </p>
-              <div className="flex items-center gap-4 text-sm">
-                <span className="flex items-center gap-1">
-                  <Star className="w-4 h-4 text-warning fill-warning" />
-                  <span className="font-medium">{restaurant.rating}</span>
-                  <span className="text-muted-foreground">({restaurant.reviewCount})</span>
-                </span>
-                <span className="flex items-center gap-1 text-muted-foreground">
-                  <Clock className="w-4 h-4" />
-                  {restaurant.deliveryTime}
-                </span>
-                <span className="flex items-center gap-1 text-muted-foreground">
-                  <MapPin className="w-4 h-4" />
-                  {restaurant.distance}
-                </span>
+              <div className="flex flex-col items-center gap-1">
+                <MapPin className="w-5 h-5 text-gray-400" />
+                <span className="text-[10px] font-black uppercase text-gray-400">{restaurant.distance}</span>
               </div>
+              {restaurant.isHomeMade && (
+                <div className="flex flex-col items-center gap-1">
+                  <Badge className="bg-orange-500 text-white border-none shadow-sm text-[10px] font-black uppercase">Home-Made</Badge>
+                </div>
+              )}
             </div>
           </div>
         </Card>
@@ -146,15 +153,15 @@ export default function RestaurantDetail() {
                     <Card key={item.id} className="overflow-hidden">
                       <div className="flex">
                         <div className="relative w-28 h-28 flex-shrink-0">
-                          <img
+                          <OptimizedImage
                             src={item.image}
                             alt={item.name}
-                            className="w-full h-full object-cover"
+                            containerClassName="w-full h-full"
                           />
                           {item.isPopular && (
                             <Badge
                               variant="warning"
-                              className="absolute top-2 left-2 text-xs py-0.5 px-2"
+                              className="absolute top-2 left-2 text-[10px] py-0.5 px-2 bg-yellow-400 text-white border-none shadow-sm"
                             >
                               Popular
                             </Badge>
