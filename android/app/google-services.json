@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "122595043770",
+    "project_id": "smartshop-eaf23",
+    "storage_bucket": "smartshop-eaf23.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:122595043770:android:0e062768e668a476455583",
+        "android_client_info": {
+          "package_name": "com.company.smartshop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "122595043770-c9c536inuoc1crnr068laf0bhsdviuoo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMItvGsrD_IZpMB3EGA52K3dI1oMgp4u0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "122595043770-c9c536inuoc1crnr068laf0bhsdviuoo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
