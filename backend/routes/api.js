@@ -1,36 +1,26 @@
 const express = require('express');
 const router = express.Router();
-
-// Mock Data
-let orders = [];
-let user = {
-    id: 'user_1',
-    name: 'Dharanish M',
-    email: 'dharanish@example.com',
-    phone: '9876543210',
-    dailyBudget: 250,
-    walletBalance: 1250
-};
-
-const restaurants = [
-    { id: '1', name: 'Biryani House', rating: 4.6, deliveryTime: '35-40 min', category: 'Biryani • Mughlai', distance: '0.8 km' },
-    { id: '2', name: 'South Express', rating: 4.4, deliveryTime: '20-25 min', category: 'South Indian', distance: '3.2 km' },
-    { id: '3', name: 'Sharma Kitchen', rating: 4.5, deliveryTime: '25-30 min', category: 'North Indian', distance: '1.5 km' },
-];
-
-const groceryShops = [
-    { id: '1', name: 'Organic Greens Hub', type: 'Organic • Fresh Produce', rating: 4.7, deliveryTime: '25 min', distance: '1.2 km' },
-    { id: '2', name: 'Fresh Grocery Mart', type: 'Staples • Essentials', rating: 4.5, deliveryTime: '30 min', distance: '1.8 km' },
-];
+const appController = require('../controllers/appController');
 
 // --- Restaurants ---
-router.get('/restaurants', (req, res) => {
-    res.json(restaurants);
-});
+router.get('/restaurants', appController.getAllRestaurants);
 
 // --- Groceries ---
-router.get('/groceries/shops', (req, res) => {
-    res.json(groceryShops);
+router.get('/groceries/shops', appController.getAllGroceryShops);
+
+// --- Medical ---
+router.get('/medical/shops', appController.getAllMedicalShops);
+
+// --- Rides ---
+router.post('/rides/request', appController.createRideRequest);
+router.get('/rides/history', async (req, res) => {
+    try {
+        const Ride = require('../models/Ride');
+        const history = await Ride.find().sort({ createdAt: -1 });
+        res.json(history);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // --- Orders ---

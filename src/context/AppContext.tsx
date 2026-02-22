@@ -3,6 +3,7 @@ import { User, CartItem, Order, Subscription, Address, PaymentMethod, Notificati
 import { restaurantsData as initialRestaurantsData, RestaurantData } from '@/data/restaurants';
 import { groceryShopsData as initialGroceryShopsData, GroceryShop } from '@/data/groceryShops';
 import { API_ENDPOINTS } from '@/lib/api-config';
+import { seedFirestore, fetchRestaurantsFromFirestore, fetchGroceryShopsFromFirestore } from '@/lib/firestore-service';
 
 interface AppContextType {
   user: User | null;
@@ -65,7 +66,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: ReactNode }) {
   const [user, setUserState] = useState<User | null>(() => {
     const saved = localStorage.getItem('app_user');
-    return saved ? JSON.parse(saved) : DEFAULT_USER;
+    return saved ? JSON.parse(saved) : null;
   });
   const [dailyBudget, setDailyBudget] = useState(user?.dailyBudget || 200);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -80,12 +81,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
     mealsDelivered: 0,
     totalMeals: 90
   });
-  const [isOnboarded, setIsOnboarded] = useState(true);
+  const [isOnboarded, setIsOnboarded] = useState(() => {
+    const saved = localStorage.getItem('app_onboarded');
+    return saved === 'true';
+  });
   const [orders, setOrders] = useState<Order[]>(() => {
     const saved = localStorage.getItem('app_orders');
     return saved ? JSON.parse(saved) : [];
   });
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    const saved = localStorage.getItem('app_user');
+    return !!saved;
+  });
 
   // Persistence
   React.useEffect(() => {
@@ -97,6 +104,34 @@ export function AppProvider({ children }: { children: ReactNode }) {
   React.useEffect(() => {
     localStorage.setItem('app_orders', JSON.stringify(orders));
   }, [orders]);
+
+  React.useEffect(() => {
+    localStorage.setItem('app_onboarded', isOnboarded.toString());
+  }, [isOnboarded]);
+
+  // Firestore Data Synchronization
+  React.useEffect(() => {
+    const syncData = async () => {
+      try {
+        if (isLoggedIn) {
+          // 1. Ensure Firestore has data
+          await seedFirestore();
+
+          // 2. Fetch fresh data
+          const fsRestaurants = await fetchRestaurantsFromFirestore();
+          const fsGroceries = await fetchGroceryShopsFromFirestore();
+
+          if (fsRestaurants.length > 0) setRestaurants(fsRestaurants as any);
+          if (fsGroceries.length > 0) setGroceryShops(fsGroceries as any);
+
+          console.log('✅ AppContext: Firestore sync successful');
+        }
+      } catch (error) {
+        console.error('❌ AppContext: Firestore sync failed', error);
+      }
+    };
+    syncData();
+  }, [isLoggedIn]);
 
   const setUser = (newUser: User | null) => {
     setUserState(newUser);
@@ -146,11 +181,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const fetchRestaurants = async () => {
     try {
+      // Try Firestore First
+      const fsData = await fetchRestaurantsFromFirestore();
+      if (fsData.length > 0) {
+        setRestaurants(fsData as any);
+        return;
+      }
+
+      // Fallback to API if Firestore is empty/fails
       const response = await fetch(API_ENDPOINTS.RESTAURANTS);
       if (response.ok) {
         const data = await response.json();
         const formattedData = data.map((r: any) => {
-          // Find original mock data if available for additional fields
           const original = initialRestaurantsData.find(m => m.name === r.name);
           return {
             ...original,
@@ -176,6 +218,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const fetchGroceryShops = async () => {
     try {
+      // Try Firestore First
+      const fsData = await fetchGroceryShopsFromFirestore();
+      if (fsData.length > 0) {
+        setGroceryShops(fsData as any);
+        return;
+      }
+
       const response = await fetch(API_ENDPOINTS.GROCERIES);
       if (response.ok) {
         const data = await response.json();

@@ -108,10 +108,10 @@ export default function Profile() {
           variant="ghost"
           size="lg"
           className="w-full text-destructive/70 hover:text-destructive hover:bg-destructive/5 font-bold h-14"
-          onClick={() => navigate('/settings')}
+          onClick={handleLogout}
         >
           <LogOut className="w-5 h-5 mr-2" />
-          Settings & Log Out
+          Log Out
         </Button>
       </div>
     </MobileLayout>
