@@ -93,7 +93,7 @@ export default function HelpSupport() {
 
             <div className="p-5 pt-0">
                 <p className="text-[10px] text-center text-muted-foreground italic">
-                    v2.4.12 • Daily Plate Care
+                    v2.4.12 • SmartShop Care
                 </p>
             </div>
         </MobileLayout>

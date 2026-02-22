@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/drawer';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { useApp } from '@/context/AppContext';
 
 const medicalShops = [
   {
@@ -79,6 +80,7 @@ type OrderStep = 'SERVICE_SELECT' | 'FORM' | 'PRICING' | 'PAYMENT' | 'CONFIRMED'
 
 export default function Medical() {
   const navigate = useNavigate();
+  const { addOrder } = useApp();
   const [selectedShop, setSelectedShop] = useState<any>(null);
   const [currentStep, setCurrentStep] = useState<OrderStep>('SERVICE_SELECT');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -175,6 +177,7 @@ export default function Medical() {
 
   const handlePayment = async () => {
     setIsProcessing(true);
+    const pricing = calculateTotal();
 
     try {
       if (orderId && orderId > 8000) { // If it was real (mock check for demo)
@@ -186,9 +189,34 @@ export default function Medical() {
       // Delay for success feel
       await new Promise(r => setTimeout(r, 2000));
 
+      // Add to global order history
+      addOrder({
+        id: orderId ? `MED-${orderId}` : 'MED-8273',
+        items: medicines.map(m => ({
+          menuItem: {
+            id: Math.random().toString(),
+            name: m.name,
+            description: 'Medical Order',
+            price: pricing.medicinePrice / medicines.length,
+            image: '',
+            isVeg: false,
+            category: 'medical'
+          },
+          quantity: m.quantity,
+          restaurantId: selectedShop.id,
+          restaurantName: selectedShop.name
+        })),
+        total: pricing.total,
+        status: 'delivered',
+        deliveryOtp: '1234',
+        estimatedTime: '25 min',
+        deliveryAddress: 'Home',
+        createdAt: new Date()
+      });
+
       setFinalOrder({
         token: orderId ? `TK-${orderId}` : 'TK-8273',
-        amount: calculateTotal().total,
+        amount: pricing.total,
         time: '20-30 mins',
         shop: selectedShop
       });
@@ -196,9 +224,34 @@ export default function Medical() {
       toast.success('Medical order confirmed!');
     } catch (e) {
       toast.error('Payment failed. Using mock confirmation for demo.');
+
+      addOrder({
+        id: 'MED-8273',
+        items: medicines.map(m => ({
+          menuItem: {
+            id: Math.random().toString(),
+            name: m.name,
+            description: 'Medical Order',
+            price: pricing.medicinePrice / medicines.length,
+            image: '',
+            isVeg: false,
+            category: 'medical'
+          },
+          quantity: m.quantity,
+          restaurantId: selectedShop.id,
+          restaurantName: selectedShop.name
+        })),
+        total: pricing.total,
+        status: 'delivered',
+        deliveryOtp: '1234',
+        estimatedTime: '25 min',
+        deliveryAddress: 'Home',
+        createdAt: new Date()
+      });
+
       setFinalOrder({
         token: 'TK-8273',
-        amount: calculateTotal().total,
+        amount: pricing.total,
         time: '20-30 mins',
         shop: selectedShop
       });

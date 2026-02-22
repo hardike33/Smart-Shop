@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button';
 import { restaurantsData } from '@/data/restaurants';
 import { RestaurantCard } from '@/components/home/RestaurantCard';
 
+import { Logo } from '@/components/layout/Logo';
+
 export default function Home() {
   const navigate = useNavigate();
   const { user, restaurants } = useApp();
@@ -25,15 +27,21 @@ export default function Home() {
     <MobileLayout>
       {/* Header */}
       <header className="px-5 pt-6 pb-4">
-        <div className="flex items-center justify-between mb-1">
-          <div>
-            <p className="text-muted-foreground text-sm">{getGreeting()} 👋</p>
-            <h1 className="text-2xl font-bold">{user?.name || 'Guest'}</h1>
-          </div>
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="w-6 h-6" />
-            <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full" />
+        <div className="flex items-center justify-between mb-6">
+          <Logo />
+          <Button variant="ghost" size="icon" className="relative bg-muted/50 rounded-full">
+            <Bell className="w-5 h-5 text-foreground" />
+            <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-primary border-2 border-background rounded-full" />
           </Button>
+        </div>
+
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <p className="text-muted-foreground text-xs uppercase tracking-widest font-bold mb-1">{getGreeting()} 👋</p>
+            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+              {user?.name ? `Hey, ${user.name}` : 'Welcome Guest'}
+            </h1>
+          </div>
         </div>
         <div className="flex items-center justify-between">
           <button className="flex items-center gap-1 text-sm text-muted-foreground">

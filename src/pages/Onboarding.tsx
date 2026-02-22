@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useApp } from '@/context/AppContext';
+import { Logo } from '@/components/layout/Logo';
 import { Wallet, Calendar, MapPin, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -53,9 +54,10 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col max-w-lg mx-auto">
-      {/* Skip button */}
-      <div className="p-6 flex justify-end">
-        <Button variant="ghost" onClick={handleSkip} className="text-muted-foreground">
+      {/* Top Header with Logo */}
+      <div className="p-6 flex items-center justify-between">
+        <Logo className="scale-75 origin-left" />
+        <Button variant="ghost" onClick={handleSkip} className="text-muted-foreground font-bold">
           Skip
         </Button>
       </div>

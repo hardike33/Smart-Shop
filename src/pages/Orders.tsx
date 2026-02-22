@@ -9,7 +9,8 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, Dr
 import {
   Clock, RotateCcw, ChevronRight, Bike,
   MapPin, CheckCircle2, Navigation, Wallet,
-  Calendar, ArrowRightLeft, History, ShoppingBag
+  Calendar, ArrowRightLeft, History, ShoppingBag,
+  Stethoscope, ChefHat, Pill, Activity, FlaskConical, User as UserIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useApp } from '@/context/AppContext';
@@ -34,6 +35,7 @@ export default function Orders() {
       status: 'delivered',
       date: '22 Jan 2026',
       emoji: '🍛',
+      paymentStatus: 'Paid via Subscription'
     },
     {
       id: 'ORD123455',
@@ -44,10 +46,71 @@ export default function Orders() {
       status: 'delivered',
       date: '21 Jan 2026',
       emoji: '🥗',
+      paymentStatus: 'Paid'
     },
   ];
 
-  const allFoodOrders = [...orders.map(o => ({
+  const mockMedicalOrders = [
+    {
+      id: 'MED88273',
+      pharmacy: 'Apollo Pharmacy',
+      medicines: 'Paracetamol 650mg, Vitamin C',
+      prescriptionRequired: 'No',
+      total: 120,
+      status: 'delivered',
+      date: '22 Feb 2026',
+      time: '10:30',
+      type: 'Medical',
+      emoji: '💊',
+      paymentStatus: 'Paid via UPI'
+    },
+    {
+      id: 'MED88274',
+      pharmacy: 'MedPlus',
+      medicines: 'Digital Thermometer',
+      prescriptionRequired: 'No',
+      total: 350,
+      status: 'delivered',
+      date: '21 Feb 2026',
+      time: '14:20',
+      type: 'Medical',
+      emoji: '🌡️',
+      paymentStatus: 'Paid via Wallet'
+    }
+  ];
+
+  const mockHomemadeOrders = [
+    {
+      id: 'HME99283',
+      chef: 'Sunita Mehra',
+      dish: 'Moong Dal Khichdi & Papad',
+      veg: true,
+      prepTime: '25 min',
+      total: 180,
+      status: 'ongoing',
+      date: '22 Feb 2026',
+      time: '15:45',
+      type: 'Homemade',
+      emoji: '👩‍🍳',
+      paymentStatus: 'Pending'
+    },
+    {
+      id: 'HME99284',
+      chef: 'Rajesh Uncle',
+      dish: 'Chicken Curry & Rice',
+      veg: false,
+      prepTime: '40 min',
+      total: 250,
+      status: 'delivered',
+      date: '21 Feb 2026',
+      time: '19:10',
+      type: 'Homemade',
+      emoji: '🥘',
+      paymentStatus: 'Paid via Cash'
+    }
+  ];
+
+  const allFoodOrders = [...orders.filter(o => o.items[0]?.menuItem?.category === 'meal' || !o.items[0]?.menuItem?.category).map(o => ({
     ...o,
     restaurant: o.items[0]?.restaurantName || 'Restaurant',
     items: o.items.map(i => i.menuItem.name),
@@ -57,8 +120,37 @@ export default function Orders() {
       year: 'numeric',
     }),
     emoji: '🍽️',
-    rawItems: o.items
-  })), ...mockFoodOrders];
+    rawItems: o.items,
+    type: 'Food',
+    paymentStatus: o.discount > 0 ? 'Paid via Subscription' : 'Paid'
+  })), ...mockFoodOrders].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  const allMedicalOrders = [...orders.filter(o => o.items[0]?.menuItem?.category === 'medical').map(o => ({
+    ...o,
+    pharmacy: o.items[0]?.restaurantName || 'Pharmacy',
+    medicines: o.items.map(i => i.menuItem.name).join(', '),
+    date: new Date(o.createdAt).toLocaleDateString('en-IN', {
+      day: 'numeric', month: 'short', year: 'numeric'
+    }),
+    emoji: '💊',
+    type: 'Medical',
+    prescriptionRequired: 'No',
+    paymentStatus: 'Paid'
+  })), ...mockMedicalOrders].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  const allHomemadeOrders = [...orders.filter(o => o.items[0]?.menuItem?.category === 'homemade').map(o => ({
+    ...o,
+    chef: o.items[0]?.restaurantName || 'Home Chef',
+    dish: o.items[0]?.menuItem?.name || 'Home Cooked Meal',
+    veg: o.items[0]?.menuItem?.isVeg ?? true,
+    prepTime: '30 min',
+    date: new Date(o.createdAt).toLocaleDateString('en-IN', {
+      day: 'numeric', month: 'short', year: 'numeric'
+    }),
+    emoji: '🏠',
+    type: 'Homemade',
+    paymentStatus: 'Paid'
+  })), ...mockHomemadeOrders].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   useEffect(() => {
     fetchData();
@@ -134,6 +226,15 @@ export default function Orders() {
     setIsDetailsOpen(true);
   };
 
+  const [showAllFood, setShowAllFood] = useState(false);
+  const [showAllMedical, setShowAllMedical] = useState(false);
+  const [showAllHomemade, setShowAllHomemade] = useState(false);
+
+  const getDayMonth = (dateStr: string | Date) => {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'COMPLETED': return <Badge variant="success" className="bg-green-500/10 text-green-600 border-none">Completed</Badge>;
@@ -184,9 +285,11 @@ export default function Orders() {
         </Card>
 
         <Tabs defaultValue="rides" className="w-full">
-          <TabsList className="w-full grid grid-cols-2 bg-slate-100 p-1 rounded-2xl h-12">
-            <TabsTrigger value="rides" className="rounded-xl font-black uppercase text-[10px] tracking-widest data-[state=active]:bg-white data-[state=active]:shadow-sm">Rides</TabsTrigger>
-            <TabsTrigger value="orders" className="rounded-xl font-black uppercase text-[10px] tracking-widest data-[state=active]:bg-white data-[state=active]:shadow-sm">Food</TabsTrigger>
+          <TabsList className="w-full grid grid-cols-4 bg-slate-100 p-1 rounded-2xl h-12">
+            <TabsTrigger value="rides" className="rounded-xl font-black uppercase text-[8px] tracking-tight data-[state=active]:bg-white data-[state=active]:shadow-sm">Rides</TabsTrigger>
+            <TabsTrigger value="orders" className="rounded-xl font-black uppercase text-[8px] tracking-tight data-[state=active]:bg-white data-[state=active]:shadow-sm">Food</TabsTrigger>
+            <TabsTrigger value="medical" className="rounded-xl font-black uppercase text-[8px] tracking-tight data-[state=active]:bg-white data-[state=active]:shadow-sm">Medical</TabsTrigger>
+            <TabsTrigger value="homemade" className="rounded-xl font-black uppercase text-[8px] tracking-tight data-[state=active]:bg-white data-[state=active]:shadow-sm">Home Made</TabsTrigger>
           </TabsList>
 
           <TabsContent value="rides" className="mt-6 space-y-6 pb-24">
@@ -315,7 +418,7 @@ export default function Orders() {
               </div>
             )}
 
-            {allFoodOrders.map(order => (
+            {(showAllFood ? allFoodOrders : allFoodOrders.slice(0, 2)).map(order => (
               <Card key={order.id} className="p-5 border-none shadow-md ring-1 ring-slate-100 rounded-[28px] overflow-hidden group">
                 <div className="flex items-start gap-4">
                   <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform">
@@ -329,11 +432,8 @@ export default function Orders() {
                       </div>
                       <div className="text-right">
                         <p className="font-black text-slate-900">₹{order.total}</p>
-                        <p className={cn(
-                          "text-[8px] font-black uppercase tracking-widest",
-                          order.discount > 0 ? "text-success" : "text-slate-400"
-                        )}>
-                          {order.discount > 0 ? 'Via Subscription' : 'Paid'}
+                        <p className="text-[8px] font-black uppercase tracking-widest text-success">
+                          {order.paymentStatus}
                         </p>
                       </div>
                     </div>
@@ -371,6 +471,156 @@ export default function Orders() {
                 </div>
               </Card>
             ))}
+
+            {allFoodOrders.length > 2 && !showAllFood && (
+              <Button
+                onClick={() => setShowAllFood(true)}
+                variant="ghost"
+                className="w-full text-xs font-black uppercase tracking-widest text-primary hover:bg-primary/5 rounded-2xl py-6"
+              >
+                View More Food History
+              </Button>
+            )}
+          </TabsContent>
+
+          <TabsContent value="medical" className="mt-6 space-y-6 pb-24">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Pill className="w-4 h-4 text-slate-400" />
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400">Medical Orders</h3>
+              </div>
+              <Badge variant="outline" className="text-[8px] font-black text-slate-400 border-slate-200">History</Badge>
+            </div>
+
+            {allMedicalOrders.length === 0 && (
+              <div className="py-12 flex flex-col items-center justify-center text-center space-y-4 bg-slate-50 rounded-[32px] border-2 border-dashed border-slate-200">
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm">
+                  <Stethoscope className="w-8 h-8 text-slate-200" />
+                </div>
+                <p className="text-sm font-bold text-slate-400">No medical orders found</p>
+                <Button onClick={() => navigate('/medical')} variant="ghost" className="text-xs font-black uppercase text-primary">Buy Medicines</Button>
+              </div>
+            )}
+
+            {(showAllMedical ? allMedicalOrders : allMedicalOrders.slice(0, 2)).map(order => (
+              <Card key={order.id} className="p-5 border-none shadow-md ring-1 ring-slate-100 rounded-[28px] overflow-hidden group">
+                <div className="flex items-start gap-4">
+                  <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform">
+                    {order.emoji}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="text-[10px] font-black uppercase text-slate-400 mb-0.5">{order.date}</p>
+                        <h4 className="font-bold text-slate-900">{order.pharmacy}</h4>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-black text-slate-900">₹{order.total}</p>
+                        <p className="text-[8px] font-black uppercase tracking-widest text-success">
+                          {order.paymentStatus}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge className="text-[8px] font-black uppercase border-none px-2 mt-2 bg-green-500/10 text-green-600">
+                      {order.status}
+                    </Badge>
+                    <p className="text-[11px] font-bold text-slate-500 mt-2 line-clamp-1">{order.medicines}</p>
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleViewDetails(order)}
+                      className="w-full h-9 rounded-xl text-[10px] font-black uppercase tracking-widest bg-slate-50 hover:bg-slate-100 text-slate-600 mt-3"
+                    >
+                      View Receipt
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+
+            {allMedicalOrders.length > 2 && !showAllMedical && (
+              <Button
+                onClick={() => setShowAllMedical(true)}
+                variant="ghost"
+                className="w-full text-xs font-black uppercase tracking-widest text-primary hover:bg-primary/5 rounded-2xl py-6"
+              >
+                View More Medical History
+              </Button>
+            )}
+          </TabsContent>
+
+          <TabsContent value="homemade" className="mt-6 space-y-6 pb-24">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ChefHat className="w-4 h-4 text-slate-400" />
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400">Home Made Orders</h3>
+              </div>
+              <Badge variant="outline" className="text-[8px] font-black text-slate-400 border-slate-200">History</Badge>
+            </div>
+
+            {allHomemadeOrders.length === 0 && (
+              <div className="py-12 flex flex-col items-center justify-center text-center space-y-4 bg-slate-50 rounded-[32px] border-2 border-dashed border-slate-200">
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm">
+                  <ChefHat className="w-8 h-8 text-slate-200" />
+                </div>
+                <p className="text-sm font-bold text-slate-400">No home made orders found</p>
+                <Button onClick={() => navigate('/home')} variant="ghost" className="text-xs font-black uppercase text-primary">Browse Home Chefs</Button>
+              </div>
+            )}
+
+            {(showAllHomemade ? allHomemadeOrders : allHomemadeOrders.slice(0, 2)).map(order => (
+              <Card key={order.id} className="p-5 border-none shadow-md ring-1 ring-slate-100 rounded-[28px] overflow-hidden group">
+                <div className="flex items-start gap-4">
+                  <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform">
+                    {order.emoji}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="text-[10px] font-black uppercase text-slate-400 mb-0.5">{order.date}</p>
+                        <h4 className="font-bold text-slate-900">{order.chef}</h4>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-black text-slate-900">₹{order.total}</p>
+                        <p className={cn(
+                          "text-[8px] font-black uppercase tracking-widest",
+                          order.paymentStatus === 'Pending' ? "text-amber-500" : "text-success"
+                        )}>
+                          {order.paymentStatus}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge className={cn(
+                      "text-[8px] font-black uppercase border-none px-2 mt-2",
+                      order.status === 'delivered' ? "bg-green-500/10 text-green-600" : "bg-primary/10 text-primary"
+                    )}>
+                      {order.status}
+                    </Badge>
+                    <p className="text-[11px] font-bold text-slate-500 mt-2 line-clamp-1">{order.dish}</p>
+                    <div className="flex gap-2 mt-3">
+                      {order.veg && <Badge variant="outline" className="text-[7px] border-green-500/30 text-green-600 bg-green-50/50">VEG</Badge>}
+                      <Badge variant="outline" className="text-[7px] border-slate-200 text-slate-400">{order.prepTime}</Badge>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleViewDetails(order)}
+                      className="w-full h-9 rounded-xl text-[10px] font-black uppercase tracking-widest bg-slate-50 hover:bg-slate-100 text-slate-600 mt-3"
+                    >
+                      Details
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+
+            {allHomemadeOrders.length > 2 && !showAllHomemade && (
+              <Button
+                onClick={() => setShowAllHomemade(true)}
+                variant="ghost"
+                className="w-full text-xs font-black uppercase tracking-widest text-primary hover:bg-primary/5 rounded-2xl py-6"
+              >
+                View More Home Made History
+              </Button>
+            )}
           </TabsContent>
         </Tabs>
       </div>
@@ -385,7 +635,7 @@ export default function Orders() {
               </div>
               <div>
                 <DrawerTitle className="text-xl font-black">
-                  {selectedActivity?.restaurant || selectedActivity?.rider?.name || 'Activity Details'}
+                  {selectedActivity?.pharmacy || selectedActivity?.chef || selectedActivity?.restaurant || selectedActivity?.rider?.name || 'Activity Details'}
                 </DrawerTitle>
                 <DrawerDescription className="text-xs font-bold uppercase tracking-widest text-primary">
                   {selectedActivity?.id ? `ID: ${selectedActivity.id}` : 'Recent Activity'}
@@ -394,8 +644,48 @@ export default function Orders() {
             </div>
           </DrawerHeader>
           <div className="p-5 space-y-6">
-            {/* Conditional Content: Food vs Ride */}
-            {selectedActivity?.items ? (
+            {/* Conditional Content: Food vs Ride vs Medical vs Homemade */}
+            {selectedActivity?.type === 'Medical' ? (
+              <div className="space-y-4">
+                <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">Medical Details</h3>
+                <Card className="p-4 bg-blue-50/50 border-none rounded-2xl space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Pill className="w-5 h-5 text-blue-500" />
+                    <div>
+                      <p className="text-[10px] font-black uppercase text-slate-400">Medicines</p>
+                      <p className="text-sm font-bold text-slate-700">{selectedActivity.medicines}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <History className="w-5 h-5 text-blue-500" />
+                    <div>
+                      <p className="text-[10px] font-black uppercase text-slate-400">Prescription Required</p>
+                      <p className="text-sm font-bold text-slate-700">{selectedActivity.prescriptionRequired}</p>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            ) : selectedActivity?.type === 'Homemade' ? (
+              <div className="space-y-4">
+                <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">Chef Details</h3>
+                <Card className="p-4 bg-orange-50/50 border-none rounded-2xl space-y-4">
+                  <div className="flex items-center gap-3">
+                    <ChefHat className="w-5 h-5 text-orange-500" />
+                    <div>
+                      <p className="text-[10px] font-black uppercase text-slate-400">Dish Name</p>
+                      <p className="text-sm font-bold text-slate-700">{selectedActivity.dish}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Clock className="w-5 h-5 text-orange-500" />
+                    <div>
+                      <p className="text-[10px] font-black uppercase text-slate-400">Preparation Time</p>
+                      <p className="text-sm font-bold text-slate-700">{selectedActivity.prepTime}</p>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            ) : selectedActivity?.items ? (
               <div className="space-y-4">
                 <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">Order Items</h3>
                 <div className="space-y-3">
@@ -427,6 +717,10 @@ export default function Orders() {
             )}
 
             <div className="space-y-3 pt-4 border-t border-dashed">
+              <div className="flex justify-between items-center text-sm font-medium text-slate-500">
+                <span>Customer Name</span>
+                <span className="font-bold text-slate-900">Dharanish M</span>
+              </div>
               <div className="flex justify-between items-center text-sm font-medium text-slate-500">
                 <span>{selectedActivity?.fare ? 'Ride Fare' : 'Item Total'}</span>
                 <span>₹{selectedActivity?.subtotal || selectedActivity?.fare || selectedActivity?.total}</span>

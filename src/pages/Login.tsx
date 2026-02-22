@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useApp } from '@/context/AppContext';
+import { Logo } from '@/components/layout/Logo';
 import { Mail, Lock, Fingerprint, Eye, EyeOff, ArrowRight, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { signInWithGoogle, auth, googleProvider } from '@/lib/firebase';
@@ -159,10 +160,8 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-background flex flex-col max-w-lg mx-auto">
       {/* Header */}
-      <div className="pt-16 pb-8 px-8 text-center">
-        <div className="w-20 h-20 bg-gradient-primary rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-card">
-          <span className="text-4xl">🍽️</span>
-        </div>
+      <div className="pt-16 pb-8 px-8 flex flex-col items-center">
+        <Logo className="mb-8 scale-150 origin-center" />
         <h1 className="text-3xl font-bold mb-2">
           {isLogin ? 'Welcome Back!' : 'Create Account'}
         </h1>
@@ -315,7 +314,7 @@ export default function Login() {
       {/* Terms and Conditions */}
       <div className="px-8 pb-8 text-center">
         <p className="text-xs text-muted-foreground leading-relaxed">
-          By continuing, you agree to Daily Plate's{' '}
+          By continuing, you agree to SmartShop's{' '}
           <button className="text-primary font-medium hover:underline">Terms of Service</button>
           {' '}and{' '}
           <button className="text-primary font-medium hover:underline">Privacy Policy</button>
